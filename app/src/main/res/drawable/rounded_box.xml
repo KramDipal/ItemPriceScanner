@@ -1,0 +1,19 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:shape="rectangle"
+    tools:ignore="ExtraText">
+
+
+    <stroke
+        android:width="2dp"
+        android:color="#4E4B4B"/>
+
+    <solid android:color="@android:color/transparent"/> <!-- Set your desired color here -->
+
+    <size
+        android:width="200dp"
+        android:height="25dp"/> <!-- Set your desired size here -->
+
+    <corners android:radius="10dp"/> <!-- Set corner radius for rounded corners if needed -->
+
+</shape>

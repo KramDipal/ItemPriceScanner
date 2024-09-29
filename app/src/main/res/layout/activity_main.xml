@@ -5,24 +5,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="ExtraText">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/nav_host_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
+        <LinearLayout
+            android:id="@+id/linearLayoutImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:menu="@menu/bottom_nav_menu"/>
+            android:orientation="vertical"
+            android:padding="16dp" />
+
+    </ScrollView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:background="@drawable/rounded_box"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp">
+
+            <EditText
+                android:id="@+id/editSearchItem"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="@color/zxing_transparent"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:hint="Search Item"
+                android:inputType="text"
+                android:maxLength="50"
+                android:singleLine="true"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="4dp" />
+
+            <Button
+                android:id="@+id/btnSearch"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="150dp"
+                android:layout_marginEnd="13dp"
+                android:background="@color/white"
+                android:gravity="fill"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:icon="@android:drawable/ic_menu_search"
+                app:iconGravity="end"
+                app:iconSize="30dp"
+                app:iconTint="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_editor_absoluteX="13dp"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteY="13dp" />
+
+
+        </LinearLayout>
+
+        <FrameLayout
+                android:id="@+id/nav_host_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+        </FrameLayout>
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                app:menu="@menu/bottom_nav_menu"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_anchor="@+id/nav_host_fragment"
+            app:layout_anchorGravity="center">
+
+
+
+
+            <ImageView
+                android:id="@+id/imageViewSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Loaded Image"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:id="@+id/textViewItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="Item Name"/>
+
+            <TextView
+                android:id="@+id/textViewPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="Item Price"/>
+
+            <TextView
+                android:id="@+id/textViewDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="Item Description"/>
+
+        </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

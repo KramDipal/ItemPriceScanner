@@ -1,6 +1,9 @@
 package eu.tutorials.mytestbottomnavigator
 
-data class Items(val id: Int,
+data class Items(
+    val id: Int,
     val itemName: String,
     val itemDescription: String,
-    val itemPrice: String)
+    val itemPrice: String,
+    val itemImage: ByteArray
+)
