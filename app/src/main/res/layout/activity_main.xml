@@ -8,18 +8,24 @@
     tools:context=".MainActivity"
     tools:ignore="ExtraText">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
             android:id="@+id/linearLayoutImages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:scaleType="centerCrop"
+             />
 
-    </ScrollView>
+    </HorizontalScrollView>
+
+
+
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
@@ -92,9 +98,6 @@
             android:orientation="vertical"
             app:layout_anchor="@+id/nav_host_fragment"
             app:layout_anchorGravity="center">
-
-
-
 
             <ImageView
                 android:id="@+id/imageViewSearch"

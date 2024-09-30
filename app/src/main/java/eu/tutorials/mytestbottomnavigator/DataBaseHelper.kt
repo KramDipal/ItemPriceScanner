@@ -54,7 +54,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor = db.query(TABLE_USERS, arrayOf(KEY_ID,
             KEY_ITEMNAME,
             KEY_ITEMDESC,
-            KEY_ITEMPRICE), "$KEY_ITEMNAME=?", arrayOf(itemName), null, null, null)
+            KEY_ITEMPRICE,
+            KEY_ITEMIMAGE), "$KEY_ITEMNAME=?", arrayOf(itemName), null, null, null)
         cursor.moveToFirst()
         //cursor.moveToLast()
         val items = Items(cursor.getInt(0),
