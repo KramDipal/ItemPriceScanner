@@ -12,8 +12,10 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -51,10 +53,11 @@ class MainActivity : AppCompatActivity() {
 
 
         val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
-        //loadImagesFromDatabase(linearLayoutImages)
+        loadImagesFromDatabase(linearLayoutImages)
 
         btnSearch.setOnClickListener {
             val itemName = editSearchItem.text.toString()
+
             clearAll(imageViewSearch, editSearchItem, textViewItemName, textViewPrice, textViewDescription)
 
 
@@ -68,6 +71,11 @@ class MainActivity : AppCompatActivity() {
 
         }
         editSearchItem.setOnClickListener {
+
+
+            val parent = linearLayoutImages.parent as ViewGroup
+            parent.removeView(linearLayoutImages)
+
             Toast.makeText(this, "editSearchItem clicked", Toast.LENGTH_LONG).show()
         }
 
@@ -90,6 +98,9 @@ class MainActivity : AppCompatActivity() {
                     // Handle home navigation
                     Toast.makeText(this, "Home Button", Toast.LENGTH_LONG).show()
                     clearAll(imageViewSearch, editSearchItem, textViewItemName, textViewPrice, textViewDescription)
+
+                    val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
+                    loadImagesFromDatabase(linearLayoutImages)
 
                     true
                 }
@@ -457,23 +468,36 @@ class MainActivity : AppCompatActivity() {
         val db = dbHelper.readableDatabase
         val cursor = db.query("Items", arrayOf("itemImage"), null, null, null, null, null)
 
+        val gridLayout = findViewById<GridLayout>(R.id.gridLayout)
+
         if (cursor.moveToFirst()) {
             do {
                 val imageByteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("itemImage"))
                 val imageBitmap =
                     BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
 
-                val imageView = ImageView(this).apply {
+                /*val imageView = ImageView(this).apply {
                     setImageBitmap(imageBitmap)
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
                     ).apply {
                         setMargins(0, 0, 0, 16)
                     }
                 }
+                */
 
-                linearLayout.addView(imageView)
+                val imageView = ImageView(this).apply {
+                    setImageBitmap(imageBitmap)
+                    layoutParams = GridLayout.LayoutParams().apply {
+                        width = 200
+                        height = 200
+                        setMargins(8, 8, 8, 8)
+                    }
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+                gridLayout.addView(imageView)
+                //linearLayout.addView(imageView)
             } while (cursor.moveToNext())
         } else {
             Log.e("Error", "No images found in the database")
