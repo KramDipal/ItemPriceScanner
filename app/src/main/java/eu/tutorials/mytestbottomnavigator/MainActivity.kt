@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
@@ -44,16 +45,42 @@ class MainActivity : AppCompatActivity() {
         //val btnScan: Button = findViewById(R.id.btnScan)
         //val imageViewQRCode: ImageView = findViewById(R.id.imageViewQRCode)
         val editSearchItem: EditText = findViewById(R.id.editSearchItem)
-        val btnSearch: Button = findViewById(R.id.btnSearch)
         val imageViewSearch = findViewById<ImageView>(R.id.imageViewSearch)
         val textViewItemName: TextView = findViewById(R.id.textViewItemName)
         val textViewPrice: TextView = findViewById(R.id.textViewPrice)
         val textViewDescription: TextView = findViewById(R.id.textViewDescription)
 
+        val btnSearch: Button = findViewById(R.id.btnSearch)
+        val btnExitViewSearch: Button = findViewById(R.id.btnExitViewSearch)
 
 
+        //Load all images in IDLE state
+        //val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
         val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
-        loadImagesFromDatabase(linearLayoutImages)
+        val gridLayout: GridLayout = linearLayoutImages.findViewById(R.id.gridLayout)
+        loadImagesFromDatabase(gridLayout)
+
+        btnExitViewSearch.setOnClickListener {
+            // Handle home navigation
+            Toast.makeText(this, "Home Button", Toast.LENGTH_LONG).show()
+            clearAll(imageViewSearch, editSearchItem, textViewItemName, textViewPrice, textViewDescription)
+
+            try {
+                val newGridLayout = GridLayout(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    columnCount = 4 // Example column count
+                    id = R.id.gridLayout // Use the same ID
+                }
+                // Add the new GridLayout to the parent layout
+                linearLayoutImages.addView(newGridLayout)
+                loadImagesFromDatabase(newGridLayout)
+            }catch (e: Exception){
+                println("An unexpected error occurred upon click on HOME button: ${e.message}")
+            }
+        }
 
         btnSearch.setOnClickListener {
             val itemName = editSearchItem.text.toString()
@@ -64,6 +91,8 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(this,"Button search $itemName", Toast.LENGTH_LONG).show()
             try {
                 loadImageFromDatabase(itemName, imageViewSearch, textViewItemName, textViewPrice, textViewDescription)
+
+
             }catch (e: Exception)
             {
                 println("An unexpected error occurred in Viewing a record: ${e.message}")
@@ -72,9 +101,18 @@ class MainActivity : AppCompatActivity() {
         }
         editSearchItem.setOnClickListener {
 
+            try {
+                //val parent = linearLayoutImages.parent as ViewGroup
+                //parent.removeView(linearLayoutImages)
 
-            val parent = linearLayoutImages.parent as ViewGroup
-            parent.removeView(linearLayoutImages)
+                val parent = gridLayout.parent as ViewGroup
+                parent.removeView(gridLayout)
+
+
+            }catch (e: Exception){
+                println("An unexpected error occurred upon click on search Item: ${e.message}")
+            }
+
 
             Toast.makeText(this, "editSearchItem clicked", Toast.LENGTH_LONG).show()
         }
@@ -99,8 +137,27 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Home Button", Toast.LENGTH_LONG).show()
                     clearAll(imageViewSearch, editSearchItem, textViewItemName, textViewPrice, textViewDescription)
 
-                    val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
-                    loadImagesFromDatabase(linearLayoutImages)
+                    try {
+
+                        val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
+                        val newGridLayout = GridLayout(this).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            columnCount = 4 // Example column count
+                            id = R.id.gridLayout // Use the same ID
+                        }
+
+                        // Add the new GridLayout to the parent layout
+                        linearLayoutImages.addView(newGridLayout)
+                        loadImagesFromDatabase(newGridLayout)
+
+
+                    }catch (e: Exception){
+                        println("An unexpected error occurred upon click on HOME button: ${e.message}")
+                    }
+
 
                     true
                 }
@@ -456,36 +513,39 @@ class MainActivity : AppCompatActivity() {
             textViewItemName.text = "Item Name: " + item
             textViewPrice.text = "Item Price: Php " + price
             textViewDescription.text = "Item Description: " + description
+
+
         } else {
             Log.e("Error", "No image found for this ID")
+            //Toast.makeText(this,"Item not found!", Toast.LENGTH_LONG).show()
+
+            val dialogBuilder = AlertDialog.Builder(this)
+                .setTitle("Product Details")
+                .setMessage("Item not found!\nPlease search for another product.")
+                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()
+                }
+            dialogBuilder.create().show()
+
         }
         cursor.close()
 
     }
 
-    private fun loadImagesFromDatabase(linearLayout: LinearLayout) {
+    private fun loadImagesFromDatabase(gridLayout: GridLayout) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.readableDatabase
         val cursor = db.query("Items", arrayOf("itemImage"), null, null, null, null, null)
 
-        val gridLayout = findViewById<GridLayout>(R.id.gridLayout)
+
+        //val gridLayout = findViewById<GridLayout>(R.id.gridLayout)
+
+        Log.i("loadImagesFromDatabase","$gridLayout")
 
         if (cursor.moveToFirst()) {
             do {
                 val imageByteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("itemImage"))
                 val imageBitmap =
                     BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
-
-                /*val imageView = ImageView(this).apply {
-                    setImageBitmap(imageBitmap)
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                    ).apply {
-                        setMargins(0, 0, 0, 16)
-                    }
-                }
-                */
 
                 val imageView = ImageView(this).apply {
                     setImageBitmap(imageBitmap)
@@ -495,6 +555,13 @@ class MainActivity : AppCompatActivity() {
                         setMargins(8, 8, 8, 8)
                     }
                     scaleType = ImageView.ScaleType.CENTER_CROP
+                    //tag = cursor.moveToFirst() // Set a unique tag/ get the index of each record
+                    Log.d("SQLiteData", "Index: ${cursor.position}")
+                    tag = cursor.position
+
+                    setOnClickListener {view ->
+                        onImageClick(view)
+                    }
                 }
                 gridLayout.addView(imageView)
                 //linearLayout.addView(imageView)
@@ -505,6 +572,33 @@ class MainActivity : AppCompatActivity() {
         cursor.close()
 
 
+    }
+
+    private fun onImageClick(view: View) {
+        val imageView = view as ImageView
+        // Example action: display a toast with image info
+
+        val imageIndex = imageView.tag as Int // Retrieve the tag
+
+        Toast.makeText(this, "Image clicked! $imageIndex", Toast.LENGTH_SHORT).show()
+
+
+        // You can also use the index to perform specific actions based on which image was clicked
+        when (imageIndex) {
+            0 -> { /* Handle first image click */
+                openNewActivity()
+            }
+            1 -> { /* Handle second image click */
+                openNewActivity()}
+            2 -> { /* Handle third image click */
+                openNewActivity()}
+        }
+    }
+
+    private fun openNewActivity() {
+        val intent = Intent(this, newWindow::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun clearAll(imageview: ImageView, editSearchItem: TextView, textViewItemName: TextView, textViewPrice: TextView, textViewDescription: TextView){

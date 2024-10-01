@@ -5,11 +5,11 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-
 
     <application
         android:allowBackup="true"
@@ -22,6 +22,9 @@
         android:theme="@style/Theme.MyTestBottomNavigator"
         tools:targetApi="31">
         <activity
+            android:name=".newWindow"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -29,16 +32,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
-
         <activity
-            tools:replace="android:screenOrientation"
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/zxing_CaptureTheme" />
-
+            android:theme="@style/zxing_CaptureTheme"
+            tools:replace="android:screenOrientation" />
     </application>
 
 </manifest>

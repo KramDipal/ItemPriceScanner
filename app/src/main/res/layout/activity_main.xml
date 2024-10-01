@@ -151,6 +151,22 @@
                 android:gravity="center"
                 android:hint="Item Description"/>
 
+            <Button
+                android:id="@+id/btnExitViewSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"
+                app:icon="@drawable/baseline_exit_to_app_24"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:background="@color/white"
+                app:iconSize="40dp"
+                app:iconTint="#100F0F"
+                android:layout_marginStart="200dp"
+                android:layout_marginEnd="30dp"
+                >
+
+            </Button>
+
         </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
