@@ -534,7 +534,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadImagesFromDatabase(gridLayout: GridLayout) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.readableDatabase
-        val cursor = db.query("Items", arrayOf("itemImage"), null, null, null, null, null)
+        val cursor = db.query("Items", arrayOf("itemImage", "itemName"), null, null, null, null, null)
 
 
         //val gridLayout = findViewById<GridLayout>(R.id.gridLayout)
@@ -544,6 +544,11 @@ class MainActivity : AppCompatActivity() {
         if (cursor.moveToFirst()) {
             do {
                 val imageByteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("itemImage"))
+                val itemName = cursor.getString(cursor.getColumnIndexOrThrow("itemName"))
+
+
+                //Log.d("SQLiteData", "itemName: $itemName")
+
                 val imageBitmap =
                     BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
 
@@ -556,8 +561,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     //tag = cursor.moveToFirst() // Set a unique tag/ get the index of each record
-                    Log.d("SQLiteData", "Index: ${cursor.position}")
-                    tag = cursor.position
+                    //Log.d("SQLiteData", "Index: ${cursor.position}")
+                    tag = itemName
+
+                    Log.d("SQLiteData", "tag: $tag")
+
+
 
                     setOnClickListener {view ->
                         onImageClick(view)
@@ -578,25 +587,34 @@ class MainActivity : AppCompatActivity() {
         val imageView = view as ImageView
         // Example action: display a toast with image info
 
-        val imageIndex = imageView.tag as Int // Retrieve the tag
+        //val imageIndex = imageView.tag as Int // Retrieve the tag
+        val itemName = imageView.tag as String
 
-        Toast.makeText(this, "Image clicked! $imageIndex", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "Image clicked! $itemName", Toast.LENGTH_SHORT).show()
 
+        openNewActivity(itemName)
 
         // You can also use the index to perform specific actions based on which image was clicked
-        when (imageIndex) {
+        /*when (imageIndex) {
             0 -> { /* Handle first image click */
-                openNewActivity()
+                openNewActivity(imageIndex)
             }
             1 -> { /* Handle second image click */
-                openNewActivity()}
+                openNewActivity(imageIndex)}
             2 -> { /* Handle third image click */
-                openNewActivity()}
+                openNewActivity(imageIndex)}
         }
+
+         */
     }
 
-    private fun openNewActivity() {
-        val intent = Intent(this, newWindow::class.java)
+        //add and pass imageIndex to next window
+    //private fun openNewActivity(imageIndex: Int) {
+        private fun openNewActivity(itemName: String) {
+        val intent = Intent(this, newWindow::class.java).apply{
+            //putExtra("IMAGE_INDEX", imageIndex)
+            putExtra("ITEM_NAME", itemName)
+        }
         startActivity(intent)
         finish()
     }

@@ -33,3 +33,5 @@ gridLayout.addView(imageView)
 8. added onImageClick event for every image.
 9. Added newWindow on onImageClick
 10. added bottom_navigation2
+11. Replaced tag value for index as itemName instead of cursor.position(index)
+12. When item click on main menu, will display in newWindow.
