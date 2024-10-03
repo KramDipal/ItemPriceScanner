@@ -35,3 +35,8 @@ gridLayout.addView(imageView)
 10. added bottom_navigation2
 11. Replaced tag value for index as itemName instead of cursor.position(index)
 12. When item click on main menu, will display in newWindow.
+
+10/03/24
+13. Test ScrollView for displayed images on idle
+14. added loadImagesFromDatabase2 as refresh button for newly added item in the grocery list.
+15. Added checking for item already exist during adding of items.

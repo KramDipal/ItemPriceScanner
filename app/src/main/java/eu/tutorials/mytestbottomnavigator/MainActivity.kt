@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun BottomNavigator() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> {
@@ -196,26 +197,30 @@ class MainActivity : AppCompatActivity() {
                     showInputDialog()
 
 
+
+
                     //Toast.makeText(this, "Add Item Button", Toast.LENGTH_LONG).show()
                     // Handle dashboard navigation
                     true
                 }
 
-                R.id.dashboard -> {
+                R.id.refresh -> {
 
-                    Toast.makeText(this, "Dashboard Button", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "refresh Button", Toast.LENGTH_LONG).show()
 
                     val editSearchItem: EditText = findViewById(R.id.editSearchItem)
                     val imageViewSearch = findViewById<ImageView>(R.id.imageViewSearch)
                     val textViewItemName: TextView = findViewById(R.id.textViewItemName)
                     val textViewPrice: TextView = findViewById(R.id.textViewPrice)
                     val textViewDescription: TextView = findViewById(R.id.textViewDescription)
-                    //val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
+                    val linearLayoutImages = findViewById<LinearLayout>(R.id.linearLayoutImages)
+                    val gridLayout: GridLayout = linearLayoutImages.findViewById(R.id.gridLayout)
 
                     // Handle home navigation
                     Toast.makeText(this, "Home Button", Toast.LENGTH_LONG).show()
                     clearAll(imageViewSearch, editSearchItem, textViewItemName, textViewPrice, textViewDescription)
 
+                    loadImagesFromDatabase2(gridLayout)
                     // Handle dashboard navigation
                     true
                 }
@@ -246,22 +251,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingInflatedId")
     private fun showInputDialog() {
-        // Inflate the dialog with custom layout
-        //val dialogView = layoutInflater.inflate(R.layout.dialog_input, null)
-
-        //val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_input, null)
-        //val imageView = dialogView.findViewById<ImageView>(R.id.imageView)
-
-        //val editItemName = dialogView.findViewById<EditText>(R.id.editItemName)
-        //val editDescription = dialogView.findViewById<EditText>(R.id.editDescription)
-        //val editPrice = dialogView.findViewById<EditText>(R.id.editPrice)
-        //val btnOpenGallery = dialogView.findViewById<Button>(R.id.btnOpenGallery)
-
-
-        //btnOpenGallery.setOnClickListener {
-        //Toast.makeText(this, "Button Gallery!", Toast.LENGTH_LONG).show()
         openGallery()
-        // }
     }
 
 
@@ -353,6 +343,8 @@ class MainActivity : AppCompatActivity() {
             //imageView.setImageURI(imageUri)
 
         }
+
+        //For QRcode scanner result
         if (requestCode == 49374)
         {
             val result: IntentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -417,7 +409,7 @@ class MainActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
 
         val byteArray = stream.toByteArray()
-        tvByteArray.text = byteArray.toString()
+        //tvByteArray.text = byteArray.toString()
 
 
         // Build the dialog
@@ -435,7 +427,17 @@ class MainActivity : AppCompatActivity() {
                 // Process the inputs as needed
                 try {
                     val user = Items(0, input1, input2, input3, byteArray)
-                    val resultX = databaseHelper.addItem(user)
+
+                    //Check first if record already exist
+                    val recordResult = checkRecordFromDatabase(input1)
+                    Log.i("recordResult", "$recordResult")
+
+                    if(!recordResult) {
+                        val resultX = databaseHelper.addItem(user)
+                        Log.i("resultX", "$resultX")
+                    }
+
+
 
                 } catch (e: Exception) {
                     println("An unexpected error occurred in adding a record: ${e.message}")
@@ -534,12 +536,12 @@ class MainActivity : AppCompatActivity() {
     private fun loadImagesFromDatabase(gridLayout: GridLayout) {
         val dbHelper = DatabaseHelper(this)
         val db = dbHelper.readableDatabase
-        val cursor = db.query("Items", arrayOf("itemImage", "itemName"), null, null, null, null, null)
-
+        val cursor = db.query("Items", arrayOf("itemImage", "itemName"),  null, null, null, null, null)
+        //val cursor = db.rawQuery("SELECT * FROM PlayerStats ORDER BY id DESC LIMIT 1", null)
 
         //val gridLayout = findViewById<GridLayout>(R.id.gridLayout)
 
-        Log.i("loadImagesFromDatabase","$gridLayout")
+        Log.i("loadImagesFromDatabase","$cursor")
 
         if (cursor.moveToFirst()) {
             do {
@@ -555,14 +557,64 @@ class MainActivity : AppCompatActivity() {
                 val imageView = ImageView(this).apply {
                     setImageBitmap(imageBitmap)
                     layoutParams = GridLayout.LayoutParams().apply {
-                        width = 200
-                        height = 200
+                        width = 300
+                        height = 300
                         setMargins(8, 8, 8, 8)
                     }
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     //tag = cursor.moveToFirst() // Set a unique tag/ get the index of each record
                     //Log.d("SQLiteData", "Index: ${cursor.position}")
-                    tag = itemName
+                    tag = itemName //tag to pass on next window ex: newWindow for searching condition
+
+                    Log.d("SQLiteData", "tag: $tag")
+
+
+
+                    setOnClickListener {view ->
+                        onImageClick(view)
+                    }
+                }
+                gridLayout.addView(imageView)
+                //linearLayout.addView(imageView)
+            } while (cursor.moveToNext())
+        } else {
+            Log.e("Error", "No images found in the database")
+        }
+        cursor.close()
+
+
+    }
+
+    private fun loadImagesFromDatabase2(gridLayout: GridLayout) {
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+        //val cursor = db.query("Items", arrayOf("itemImage", "itemName"),  null, null, null, null, null)
+        val cursor = db.rawQuery("SELECT itemImage, itemName FROM Items ORDER BY id DESC LIMIT 1", null)
+
+        Log.i("loadImagesFromDatabase2","${cursor.count}")
+
+        if (cursor.moveToFirst()) {
+            do {
+                val imageByteArray = cursor.getBlob(cursor.getColumnIndexOrThrow("itemImage"))
+                val itemName = cursor.getString(cursor.getColumnIndexOrThrow("itemName"))
+
+
+                //Log.d("SQLiteData", "itemName: $itemName")
+
+                val imageBitmap =
+                    BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
+
+                val imageView = ImageView(this).apply {
+                    setImageBitmap(imageBitmap)
+                    layoutParams = GridLayout.LayoutParams().apply {
+                        width = 300
+                        height = 300
+                        setMargins(8, 8, 8, 8)
+                    }
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    //tag = cursor.moveToFirst() // Set a unique tag/ get the index of each record
+                    //Log.d("SQLiteData", "Index: ${cursor.position}")
+                    tag = itemName //tag to pass on next window ex: newWindow for searching condition
 
                     Log.d("SQLiteData", "tag: $tag")
 
@@ -625,6 +677,34 @@ class MainActivity : AppCompatActivity() {
         textViewPrice.text = null
         textViewDescription.text = null
         editSearchItem.text = null
+
+    }
+
+    private fun checkRecordFromDatabase(itemName: String) :Boolean{
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
+        var returnX = false
+
+        Log.i("checkRecordFromDatabase", itemName)
+
+        val cursor = db.rawQuery("SELECT * FROM Items WHERE itemName = '$itemName'", null)
+
+
+        Log.i("checkRecordFromDatabase","$cursor.count")
+
+        if (cursor.moveToFirst()) {
+            val dialogBuilder = AlertDialog.Builder(this)
+                .setTitle("Product Details")
+                .setMessage("Product already exist!\nPlease add another item.")
+                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()
+                }
+            dialogBuilder.create().show()
+
+            returnX = true
+        }
+        cursor.close()
+
+        return returnX
 
     }
 

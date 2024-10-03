@@ -8,7 +8,11 @@
     tools:context=".MainActivity"
     tools:ignore="ExtraText">
 
+
+    <!--
     <HorizontalScrollView
+    -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
@@ -18,10 +22,12 @@
         android:fadingEdgeLength="50dp"
         tools:ignore="MissingConstraints">
 
+
+
         <LinearLayout
             android:id="@+id/linearLayoutImages"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp"
             android:layout_marginTop="65dp"
             android:scaleType="centerCrop"
@@ -32,14 +38,16 @@
                 android:id="@+id/gridLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:columnCount="6"
+                android:columnCount="2"
                 android:orientation="horizontal">
             </GridLayout>
 
         </LinearLayout>
+    </ScrollView>
 
-
+    <!--
     </HorizontalScrollView>
+    -->
 
 
 

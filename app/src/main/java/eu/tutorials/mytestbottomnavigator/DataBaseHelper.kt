@@ -27,6 +27,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + "$KEY_ITEMNAME TEXT,"
                 + "$KEY_ITEMDESC TEXT,"
                 + "$KEY_ITEMPRICE TEXT, $KEY_ITEMIMAGE BLOB)")
+
+        //val createTable2 = ("CREATE VIEW PlayerStatsView AS SELECT $KEY_ITEMNAME, $KEY_ITEMDESC, $KEY_ITEMPRICE, $KEY_ITEMIMAGE FROM $TABLE_USERS WHERE $KEY_ITEMNAME = Milo")
+
         db.execSQL(createTable)
     }
 
