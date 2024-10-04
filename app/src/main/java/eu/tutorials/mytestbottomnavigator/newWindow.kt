@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.GridLayout
@@ -24,6 +25,14 @@ class newWindow : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_window)
+
+
+        // This is used to hide the status bar.
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
 
         databaseHelper = DatabaseHelper(this)
         val imageViewSearch = findViewById<ImageView>(R.id.imageViewSearch2)
